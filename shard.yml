@@ -1,0 +1,13 @@
+name: bstrap
+version: 0.1.0
+
+authors:
+  - Jonathan Clem <jonathan@jclem.net>
+
+targets:
+  bstrap:
+    main: src/bstrap.cr
+
+crystal: 0.21.1
+
+license: MIT
