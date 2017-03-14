@@ -1,4 +1,4 @@
-require "./bstrap/*"
+require "./*"
 require "json"
 require "option_parser"
 
@@ -140,5 +140,3 @@ class Bstrap::CLI
     end
   end
 end
-
-Bstrap::CLI.new.run
