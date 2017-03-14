@@ -86,10 +86,10 @@ class Bstrap::CLI
     end
   rescue Errno
     puts "Could not read file \"#{path}\""
-    exit(1)
+    exit 1
   rescue JSON::ParseException
     puts "Could not parse JSON in file \"#{path}\""
-    exit(1)
+    exit 1
   end
 
   private def parse_envfile_env(path : String)
@@ -104,7 +104,7 @@ class Bstrap::CLI
     AppEnv.new
   rescue IndexError # Line was not in key=value format; could not destructure
     puts "Invalid line in \"#{path}\""
-    exit(1)
+    exit 1
   end
 
   private def prompt_value(key : String, entry : Entry)
@@ -124,7 +124,7 @@ class Bstrap::CLI
         entry.value = gets
       when 'q'
         puts "\nQuitting"
-        exit(1)
+        exit 1
       end
     else
       print "Value: "
