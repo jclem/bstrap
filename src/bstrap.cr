@@ -54,7 +54,7 @@ class Bstrap::CLI
     end
 
     begin
-      File.write(out_path, @app_env.to_envfile)
+      File.write(out_path.as(String), @app_env.to_envfile)
     rescue Errno
       puts "Could not write to \"#{out_path}\""
       exit 1
