@@ -19,6 +19,7 @@ class Bstrap::CLI
   def run
     app_path = "./app.json"
     env_path = "./.env"
+    out_path = nil
 
     OptionParser.parse! do |parser|
       parser.banner = "Usage: bstrap [arguments]"
@@ -27,8 +28,12 @@ class Bstrap::CLI
         app_path = path
       end
 
-      parser.on("-e PATH", "--envfile=PATH", "Specify .env file") do |path|
+      parser.on("-e PATH", "--envfile=PATH", "Specify .env file (will be written to unless an output path is given)") do |path|
         env_path = path
+      end
+
+      parser.on("-o PATH", "--output=PATH", "The path to which the new environment will be written") do |path|
+        out_path = path
       end
 
       parser.on("-h", "--help", "Show this help") do
@@ -36,6 +41,8 @@ class Bstrap::CLI
         exit 0
       end
     end
+
+    out_path = env_path unless out_path
 
     parse_app_env(app_path)
     env = parse_envfile_env(env_path)
@@ -47,9 +54,9 @@ class Bstrap::CLI
     end
 
     begin
-      File.write(env_path, @app_env.to_envfile)
+      File.write(out_path, @app_env.to_envfile)
     rescue Errno
-      puts "Could not write to \"#{env_path}\""
+      puts "Could not write to \"#{out_path}\""
       exit 1
     end
   end
