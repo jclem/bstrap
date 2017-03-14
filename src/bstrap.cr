@@ -9,7 +9,8 @@ require "option_parser"
 # $ bstrap --help
 # Usage: bstrap [arguments]
 #     -a PATH, --appjson=PATH          Specify app.json file
-#     -e PATH, --envfile=PATH          Specify .env file
+#     -e PATH, --envfile=PATH          Specify .env file (will be written to unless an output path is given)
+#     -o PATH, --output=PATH           The path to which the new environment will be written
 #     -h, --help                       Show this help
 # ```
 class Bstrap::CLI
