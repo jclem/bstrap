@@ -7,6 +7,12 @@ class Bstrap::AppEnv
 
   @env = {} of String => Entry
 
+  def initialize(hash = {} of String => String)
+    hash.each do |key, value|
+      self[key] = value
+    end
+  end
+
   # Returns the value of a given environment variable represented by *key*.
   #
   # ```

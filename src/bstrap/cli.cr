@@ -101,16 +101,10 @@ class Bstrap::CLI
   end
 
   private def parse_envfile_env(path : String)
-    app_env = AppEnv.new
-
-    File.read_lines(path).reduce(app_env) do |app_env, line|
-      key, value = line.split("=", limit: 2)
-      app_env.put_entry(key, Entry.new(value))
-      app_env
-    end
+    AppEnv.new(Dotenv.parse_dotenv(path))
   rescue Errno
     AppEnv.new
-  rescue IndexError # Line was not in key=value format; could not destructure
+  rescue Dotenv::InvalidLineException
     puts "Invalid line in \"#{path}\""
     exit 1
   end
