@@ -81,6 +81,14 @@ class Bstrap::AppEnv
     end
   end
 
+  # Returns the app environment as a hash.
+  def to_h : Hash(String, String?)
+    reduce({} of String => String?) do |hash, (key, entry)|
+      hash[key] = entry.value
+      hash
+    end
+  end
+
   protected def env
     @env
   end
