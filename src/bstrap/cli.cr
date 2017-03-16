@@ -9,18 +9,22 @@ require "option_parser"
 # $ bstrap --help
 # Usage: bstrap [arguments]
 #     -a PATH, --appjson=PATH          Specify app.json file
-#     -e PATH, --envfile=PATH          Specify .env file (will be written to unless an output path is given)
+#     -f PATH, --envfile=PATH          Specify .env file (will be written to unless an output path is given)
 #     -o PATH, --output=PATH           The path to which the new environment will be written
+#     -e ENV, --env=ENV                Specify the environment to merge from the app.json
+#     -P, --noprompt                   Do not prompt for values
 #     -h, --help                       Show this help
 # ```
 class Bstrap::CLI
   @app_env = AppEnv.new
 
   # Run the Bstrap CLI utility.
-  def run
+  def run : Nil
     app_path = "./app.json"
     env_path = "./.env"
     out_path = nil
+    current_env = "development"
+    prompt = true
 
     OptionParser.parse! do |parser|
       parser.banner = "Usage: bstrap [arguments]"
@@ -29,12 +33,20 @@ class Bstrap::CLI
         app_path = path
       end
 
-      parser.on("-e PATH", "--envfile=PATH", "Specify .env file (will be written to unless an output path is given)") do |path|
+      parser.on("-f PATH", "--envfile=PATH", "Specify .env file (will be written to unless an output path is given)") do |path|
         env_path = path
       end
 
       parser.on("-o PATH", "--output=PATH", "The path to which the new environment will be written") do |path|
         out_path = path
+      end
+
+      parser.on("-e ENV", "--env=ENV", "Specify the environment to merge from the app.json") do |environment|
+        current_env = environment
+      end
+
+      parser.on("-P", "--noprompt", "Do not prompt for values") do
+        prompt = false
       end
 
       parser.on("-h", "--help", "Show this help") do
@@ -45,13 +57,13 @@ class Bstrap::CLI
 
     out_path = env_path unless out_path
 
-    parse_app_env(app_path)
+    @app_env = parse_app_json_env(app_path, current_env)
     env = parse_envfile_env(env_path)
 
     @app_env.merge!(env)
 
     @app_env.each do |(key, value)|
-      prompt_value(key, value)
+      prompt_value(key, value) if prompt
     end
 
     begin
@@ -62,41 +74,16 @@ class Bstrap::CLI
     end
   end
 
-  private def parse_app_env(path : String)
-    raw_json = File.read(path)
-    app_json = JSON.parse(raw_json).as_h?
-
-    if app_json
-      env = app_json.fetch("env", nil)
-
-      if env.is_a? Hash
-        env.each do |key, value|
-          case value
-          when String
-            @app_env[key] = value
-          when Hash
-            @app_env.put_entry(key, Entry.from_json(value.to_json))
-          end
-        end
-      end
-
-      environments = app_json.fetch("environments", nil)
-
-      if environments.is_a? Hash
-        dev = environments.fetch("development")
-
-        if dev.is_a? Hash
-          dev.each do |key, value|
-            @app_env[key] = value.to_s
-          end
-        end
-      end
-    end
-  rescue Errno
-    puts "Could not read file \"#{path}\""
+  private def parse_app_json_env(path : String, current_env : String)
+    AppEnv.new(AppJSON.parse_app_json_env(path, current_env))
+  rescue ex : AppEnv::InvalidEntry
+    puts ex
     exit 1
-  rescue JSON::ParseException
-    puts "Could not parse JSON in file \"#{path}\""
+  rescue ex : AppJSON::InvalidAppJSON
+    puts %(Invalid app.json file at "#{path}": #{ex.message})
+    exit 1
+  rescue Errno
+    puts %(Unable to read app.json file at "#{path}")
     exit 1
   end
 
@@ -118,13 +105,13 @@ class Bstrap::CLI
     if entry.value
       puts "Current value: #{entry.value}"
       print "Replace current value? (Y/n/q) "
-      replace = STDIN.raw(&.read_char)
+      replace = gets
 
       case replace
-      when 'Y'
+      when "Y"
         print "\nNew value: "
         entry.value = gets
-      when 'q'
+      when "q"
         puts "\nQuitting"
         exit 1
       end

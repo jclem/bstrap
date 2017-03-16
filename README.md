@@ -1,18 +1,17 @@
 # bstrap
 
-TODO: Write a description here
+An initializer for development environments, `bstrap` reads environment
+variables from [app.json][app_json] files, combines them with variables from
+dotenv files (a file with newline-separated KEY=value pairs), and outputs
+new dotenv files. Along the way, it can prompt the user for missing values.
 
 ## Installation
 
-TODO: Write installation instructions here
+[Download the latest release][releases] and put it in your PATH.
 
 ## Usage
 
-TODO: Write usage instructions here
-
-## Development
-
-TODO: Write development instructions here
+For usage instructions, enter `bstrap --help` into your terminal.
 
 ## Contributing
 
@@ -25,3 +24,6 @@ TODO: Write development instructions here
 ## Contributors
 
 - [jclem](https://github.com/jclem) Jonathan Clem - creator, maintainer
+
+[app_json]: https://devcenter.heroku.com/articles/app-json-schema
+[releases]: https://github.com/jclem/bstrap/releases

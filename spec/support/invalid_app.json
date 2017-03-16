@@ -1,0 +1,19 @@
+{
+  "env": {
+    "STRING": "value",
+    "HASH": {
+      "description": ["Hash description"],
+      "required": false,
+      "value": "value"
+    },
+    "HASH_REQUIRED": {
+      "description": "Required hash description",
+      "value": "required value"
+    }
+  },
+  "environments": {
+    "development": {
+      "STRING": "development value"
+    }
+  }
+}

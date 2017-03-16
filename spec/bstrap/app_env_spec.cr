@@ -63,4 +63,3 @@ describe Bstrap::AppEnv do
     env.to_h.should eq({"foo" => "bar", "baz" => "qux"})
   end
 end
-

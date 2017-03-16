@@ -7,9 +7,21 @@ class Bstrap::AppEnv
 
   @env = {} of String => Entry
 
-  def initialize(hash = {} of String => String)
+  class InvalidEntry < Exception
+  end
+
+  def initialize(hash = {} of String => Hash(String, JSON::Type) | String)
     hash.each do |key, value|
-      self[key] = value
+      case value
+      when String
+        self[key] = value
+      when Hash(String, JSON::Type)
+        begin
+          self.put_entry(key, Entry.from_json(value.to_json))
+        rescue ex : JSON::ParseException
+          raise InvalidEntry.new(%(Invalid entry for "#{key}"))
+        end
+      end
     end
   end
 
