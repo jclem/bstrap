@@ -7,6 +7,17 @@ new dotenv files. Along the way, it can prompt the user for missing values.
 
 ## Installation
 
+### OS X
+
+Install via homebrew:
+
+```
+brew tap jclem/bstrap
+brew install bstrap
+```
+
+### Linux
+
 [Download the latest release][release] and put it in your PATH.
 
 ## Usage
