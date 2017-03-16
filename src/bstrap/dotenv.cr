@@ -12,13 +12,14 @@ module Bstrap::Dotenv
   # Bstrap::Dotenv.parse_dotenv(".env") # => {"FOO" => "bar"}
   # ```
   def parse_dotenv(path : String) : Hash(String, String)
-    ({} of String => String).tap do |hash|
-      File.each_line(path) do |line|
-        key, value = line.split("=", limit: 2)
-        hash[key] = value
-      end
+    hash = {} of String => String
+
+    File.each_line(path) do |line|
+      parts = line.split("=", limit: 2)
+      raise InvalidLineException.new if parts.size < 2
+      hash[parts[0]] = parts[1]
     end
-  rescue IndexError # Line was not in key=value format
-    raise InvalidLineException.new
+
+    hash
   end
 end
