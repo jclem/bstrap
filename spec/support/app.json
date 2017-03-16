@@ -9,6 +9,13 @@
     "HASH_REQUIRED": {
       "description": "Required hash description",
       "value": "required value"
+    },
+    "LONG_DESCRIPTION": {
+      "description": "This has a particularly long description that should be wrapped in terminal output in order to be read",
+      "value": "required value"
+    },
+    "NO_VALUE": {
+      "description": "This has no value and is required"
     }
   },
   "environments": {

@@ -1,5 +1,5 @@
 require "./*"
-require "json"
+require "colorize"
 require "option_parser"
 
 # The Bstrap CLI utility reads app.json and .env files, merges them, and writes
@@ -97,27 +97,71 @@ class Bstrap::CLI
   end
 
   private def prompt_value(key : String, entry : Entry)
-    puts "\n\n#{key}"
-    puts "=" * key.size
+    puts "\n#{key.colorize.green.underline}\n\n"
 
-    puts "#{entry.description}\n" if entry.description
+    unless entry.description.empty?
+      puts indent(underline(wrap(entry.description, 80), '-'))
+    end
 
     if entry.value
-      puts "Current value: #{entry.value}"
-      print "Replace current value? (Y/n/q) "
+      puts indent("Current value: #{entry.value}")
+      print indent("Replace current value? (Y/n/q) ")
       replace = gets
 
       case replace
       when "Y"
-        print "\nNew value: "
+        print "\n#{indent("New value: ")}"
         entry.value = gets
       when "q"
         puts "\nQuitting"
         exit 1
       end
     else
-      print "Value: "
+      print indent("Value: ")
       entry.value = gets
     end
+  end
+
+  private def indent(content : String, len : Int32 = 2) : String
+    content.split("\n").map do |line|
+      " " * len + line
+    end.join("\n")
+  end
+
+  private def underline(content : String, char : Char) : String
+    content + "\n" + underline_for(content, char)
+  end
+
+  private def underline_for(content : String, char : Char) : String
+    max =
+      content.split("\n").reduce(0) do |max, line|
+        if line.size > max
+          line.size
+        else
+          max
+        end
+      end
+
+    char.to_s * max
+  end
+
+  private def wrap(content : String, width : Int32) : String
+    lines = [] of String
+    current_line = ""
+
+    content.split(/\s+/) do |word|
+      if current_line.size + word.size >= width
+        lines << current_line
+        current_line = word
+      elsif current_line.empty?
+        current_line = word
+      else
+        current_line += " " + word
+      end
+    end
+
+    lines << current_line unless current_line.empty?
+
+    lines.join("\n")
   end
 end
