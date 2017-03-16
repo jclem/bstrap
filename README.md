@@ -7,7 +7,7 @@ new dotenv files. Along the way, it can prompt the user for missing values.
 
 ## Installation
 
-[Download the latest release][releases] and put it in your PATH.
+[Download the latest release][release] and put it in your PATH.
 
 ## Usage
 
@@ -26,4 +26,4 @@ For usage instructions, enter `bstrap --help` into your terminal.
 - [jclem](https://github.com/jclem) Jonathan Clem - creator, maintainer
 
 [app_json]: https://devcenter.heroku.com/articles/app-json-schema
-[releases]: https://github.com/jclem/bstrap/releases
+[release]: https://github.com/jclem/bstrap/releases/latest
